@@ -1,0 +1,30 @@
+# Secrets
+.env
+.env.local
+**/.env
+!**/.env.example
+
+# Node / Expo
+node_modules/
+.expo/
+dist/
+build/
+web-build/
+npm-debug.log*
+
+# Python
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# Editors and operating systems
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+Desktop.ini
+*.swp
