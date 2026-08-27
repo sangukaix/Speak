@@ -2,7 +2,8 @@
 
 ## MVP
 
-- Complete Phases 0-5: reliable foundation, UI, authentication, profile, and text tutor.
+- Phases 0-2 provide the verified repository, API skeleton, and clickable UI foundation.
+- Complete Phases 3-5 next: authentication, persisted profile, and a secure text tutor.
 - Add lesson session and a basic structured report after the text flow is stable.
 - Validate learner value before investing in advanced media or agent orchestration.
 

@@ -15,9 +15,21 @@
 - [x] Connect frontend status screen to `/health`
 - [x] Pass frontend TypeScript check and web export
 
+## Phase 2 — UI foundation
+
+- [x] Research current Speak, Fluently, and adjacent speaking products using public sources
+- [x] Record the product brief, competitor conclusions, information architecture, and visual rules
+- [x] Define typed UI tokens and accessible reusable components
+- [x] Implement Home, Practice, Review, and Profile tab routes
+- [x] Implement the lesson preview, scripted choice session, and example report loop
+- [x] Label all fixed lesson, progress, profile, session, and report behavior as demo or example content
+- [x] Preserve the real backend health check under the developer route
+- [x] Verify TypeScript, Expo dependency compatibility, backend tests, web interaction, responsive widths, and iOS/Android/web exports
+
 ## Next phase
 
+- [ ] Review the working name, Korean copy, visual direction, and workplace-English launch wedge with target learners
+- [ ] Define Phase 3 authentication states, privacy copy, route guards, and acceptance tests before adding Supabase
+- [ ] Decide which complete free learning loop appears before any future paywall
+- [ ] Keep dark mode planned until a full second palette and platform visual QA are in scope
 - [ ] Upgrade the Expo toolchain when its `xcode` dependency accepts `uuid` 11.1.1+; do not use the audit-suggested Expo 46 downgrade
-- [ ] Define UI tokens and accessible reusable components
-- [ ] Define route map for planned product screens
-- [ ] Create low-fidelity screen skeletons without backend mocks masquerading as real data

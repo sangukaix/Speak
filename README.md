@@ -1,21 +1,25 @@
 # Speak AI
 
-Speak AI is a cross-platform AI English conversation service in its foundation stage. This repository currently implements Phase 0 and Phase 1 only: portable project setup, an Expo Router client, a FastAPI server, and a client-to-server health check.
+Speak AI is a cross-platform English speaking coach in its foundation stage. The repository implements Phases 0–2: portable setup, an Expo Router client, a FastAPI health endpoint, and a responsive clickable product prototype. All lesson, progress, session, and report content in Phase 2 is explicitly labeled demo content; AI, voice, accounts, and persistence are not connected.
 
 ## Current features
 
 - One Expo + React Native + TypeScript codebase for web, Android, and iOS
-- Expo Router entry and a minimal API connection screen
+- Four-tab mobile-first navigation for Home, Practice, Review, and Profile
+- Clickable demo loop from lesson preview through a scripted choice session to an example evidence-based report
+- Accessible theme primitives, responsive layouts, and official cross-platform system symbols
+- Three fixed sample lessons and clearly labeled sample review content
 - FastAPI `GET /health` endpoint
+- Preserved developer health screen that performs the real client-to-server check
 - Environment-based, explicit development CORS origins
 - Automated backend health test and frontend TypeScript check
-- Architecture and delivery documentation for later Supabase and OpenAI work
+- Product brief, competitor research, UX rules, architecture, and delivery documentation for later phases
 
 No AI, authentication, database, payment, or speech integration is implemented yet.
 
 ## Technology
 
-- Node.js 24.18.0 LTS, npm, Expo SDK 57, React Native 0.86.2, React 19.2.3, TypeScript 6.0
+- Node.js 24.18.0 LTS, npm, Expo SDK 57, Expo Router, Expo Symbols, React Native 0.86.2, React 19.2.3, TypeScript 6.0
 - Python 3.13, FastAPI 0.141.1, Uvicorn 0.52.4, Pydantic 2.13.4
 - Planned: Supabase/PostgreSQL and OpenAI Realtime/WebRTC
 
@@ -81,10 +85,11 @@ Set-Location backend
 Set-Location ../frontend
 npm run typecheck
 npx expo export --platform web
+npx expo export --platform all
 ```
 
 ## Git safety
 
 Commit source, documentation, lock files, requirements, tests, and `.env.example`. Do not commit `.env`, tokens, API keys, `node_modules`, `.venv`, Expo cache, or build output. Run `git status` before every push.
 
-See [SETUP](docs/SETUP.md), [DEVELOPMENT](docs/DEVELOPMENT.md), and the [documentation index](docs/PROJECT_CONTEXT.md) for details.
+Start with the [product brief](docs/PRODUCT_BRIEF.md), [competitor research](docs/COMPETITOR_RESEARCH.md), [UX foundation](docs/UX_FOUNDATION.md), [SETUP](docs/SETUP.md), [DEVELOPMENT](docs/DEVELOPMENT.md), and the [documentation index](docs/PROJECT_CONTEXT.md).

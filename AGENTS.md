@@ -5,11 +5,12 @@
 Read, in order:
 
 1. `AGENTS.md`
-2. `README.md`
-3. `docs/PROJECT_CONTEXT.md`
-4. `docs/ARCHITECTURE.md`
-5. `docs/TODO.md`
-6. The relevant source and tests
+2. `docs/mustRule.md`
+3. `README.md`
+4. `docs/PROJECT_CONTEXT.md`
+5. `docs/ARCHITECTURE.md`
+6. `docs/TODO.md`
+7. The relevant source and tests
 
 ## Working rules
 

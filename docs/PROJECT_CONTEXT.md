@@ -10,7 +10,7 @@ The long-term experience combines real-time speech conversation, live transcript
 
 ## Differentiation direction
 
-The product should connect conversation, evidence-based feedback, durable learner memory, and the next recommended practice into one continuous loop. Agent boundaries may be introduced later when distinct responsibilities justify them; the MVP starts with conventional services.
+The product should connect guided conversation, evidence-based feedback, a prioritized takeaway, durable learner memory, and the next recommended practice into one continuous loop. Feedback leads with transcript evidence, a suggested revision, a reason, and calibrated confidence rather than an opaque score. Agent boundaries may be introduced later when distinct responsibilities justify them; the MVP starts with conventional services.
 
 ## MVP and long-term goals
 
@@ -18,4 +18,18 @@ The MVP will validate authentication, profile, text tutor, lesson sessions, repo
 
 ## Technology and current stage
 
-The client is Expo/React Native/TypeScript with Expo Router and React Native Web. The server is FastAPI. Supabase and OpenAI are planned integrations. The repository is currently at Phase 1: the cross-platform client and API skeleton exist, and only the health connection is functional.
+The client is Expo/React Native/TypeScript with Expo Router, Expo Symbols, and React Native Web. The server is FastAPI. Supabase and OpenAI are planned integrations.
+
+The repository is at Phase 2. A responsive, clickable UI prototype now validates the intended learning loop across web, Android, and iOS code paths. Its lesson data, progress, scripted session, and report are fixed mocks labeled in the UI. The FastAPI health connection remains the only functional client-server integration.
+
+## Canonical documentation
+
+- [PRODUCT_BRIEF](PRODUCT_BRIEF.md): learner, product promise, scope, and planning record
+- [COMPETITOR_RESEARCH](COMPETITOR_RESEARCH.md): public research, sources, limits, and conclusions
+- [UX_FOUNDATION](UX_FOUNDATION.md): information architecture, visual system, accessibility, and mock language
+- [ARCHITECTURE](ARCHITECTURE.md): current technical structure and planned service boundaries
+- [DECISIONS](DECISIONS.md): durable product and technical decisions
+- [PLAN](PLAN.md) and [ROADMAP](ROADMAP.md): delivery sequence
+- [TODO](TODO.md): verified current work and next tasks
+- [API](API.md), [DATABASE](DATABASE.md), and [AI_ARCHITECTURE](AI_ARCHITECTURE.md): present and planned backend contracts
+- [SETUP](SETUP.md), [DEVELOPMENT](DEVELOPMENT.md), and [TROUBLESHOOTING](TROUBLESHOOTING.md): contributor operations
