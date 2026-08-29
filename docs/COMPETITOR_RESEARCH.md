@@ -70,6 +70,31 @@ Context and limits:
 - The post-assessment Progress destination did not finish loading during a verified emulator DNS outage. A recovery attempt entered the app's sign-out path, so inspection stopped without re-authentication; this environment-limited state is not treated as evidence about the normal product flow.
 - This is one account on one platform. Availability and copy can vary by account, locale, rollout, and subscription.
 
+### Authenticated session work log
+
+This is the privacy-safe chronological record of what the repository owner and Codex actually did during the direct Fluently session. It exists so a future computer or Codex session does not mistake a transient emulator problem for a product finding or repeat completed research without a reason.
+
+1. Android Studio and its SDK were used on the existing Windows PC. A Pixel 8-style Android 16/API 36 emulator named `Fluently_Pixel_8_API_36` was prepared with a Google Play system image. The observed tools were ADB 37.0.1 and Android Emulator 37.1.11.
+2. Fluently was opened in the emulator. Early white/black screens and hardware-keyboard input difficulty were transient emulator or input-state problems. They were resolved before authenticated inspection and were not retained as evidence about Fluently's normal UX.
+3. The owner used an existing owner-controlled Fluently account and manually completed the app and email-verification steps. Codex did not store the login email, password, one-time code, auth token, cookie, or entitlement value. The account's paid/subscription state was not independently verified, so no access-tier conclusion was recorded.
+4. The owner manually completed the required onboarding choices for practice cadence, preferred time, and daily practice pace. The chosen personal values were intentionally not captured. Codex then inspected Home, pre-assessment Progress, tutor controls, Personalization, and Settings structure.
+5. The first assessment was opened. Its preparation page and phone-call-style interaction were inspected. The observed speech control required tap-to-start and tap-to-stop, with visible recording duration.
+6. Audio initially failed even though Fluently's Android microphone permission and the AVD's audio-input settings were allowed. The emulator had been started with host-audio support, but its runtime host microphone gate still reported disabled. Host audio input was enabled through emulator microphone controls; Windows microphone permission/input were checked, and the owner later confirmed that the input indicator moved.
+7. After audio input recovered, the owner continued and completed the assessment. Codex retained only product structure, state transitions, category names, and general evidence patterns—not spoken answers, transcripts, personalized feedback wording, audio, or account-specific scores.
+8. The initial result summary, all five skill-detail structures, strengths/improvement regrouping, learning signals, generated study-plan handoff, and Home continuation state were inspected.
+9. A later attempt to inspect the post-assessment Progress destination encountered a verified emulator DNS outage. Recovery entered Fluently's sign-out path, so the session ended without re-authenticating. The unfinished Progress screen is recorded as unverified, not as a Fluently defect.
+10. Temporary debugging/proxy state and research screenshots were not kept in the repository. No competitor media or personal result artifact needs to be transferred to another PC.
+
+Audio/emulator diagnostic facts retained from that session:
+
+- AVD configuration exposed `hw.keyboard=yes`, `hw.audioInput=yes`, and `hw.audioOutput=yes`.
+- The emulator launch included `-allow-host-audio`; other local stability/display flags used in that run were `-skip-adb-auth`, `-gpu host`, `-feature -Vulkan`, `-scale 0.3`, `-no-snapshot-load`, and `-no-boot-anim`. These are historical diagnostics, not required Speak AI setup.
+- Fluently's Android microphone permission and AppOps were allowed, emulator WebRTC audio configuration passed its check, and Windows permitted the emulator process to access the microphone.
+- Despite those static settings, the runtime microphone state initially reported `realAudioEnabled=false`, and measured guest input was approximately `-83 dB`, effectively silence. Enabling host input changed the runtime state; the owner then observed movement and completed the assessment.
+- This emulator did not expose the documented `avd hostmicon` console command. The working control path was Emulator Extended Controls → Microphone → `Virtual microphone uses host audio input` or the equivalent emulator gRPC microphone-state control.
+
+The emulator research is complete for the current product-planning scope. A new PC does not need to recreate the AVD or sign in to Fluently merely to continue Speak AI development. Repeat direct-product research only when a later product question requires current evidence; use a physical Android phone when reliable voice behavior matters.
+
 | Flow step | Authenticated direct observation | Not verified | Implication for Speak AI |
 |---|---|---|---|
 | Sign-in entry | One entry screen supported email and third-party identity-provider choices before the owner authenticated manually. | Account creation, recovery, SSO behavior, and error states were not exercised. | Phase 3 should specify sign-in, sign-up, recovery, loading, and failure states before selecting an auth provider. |

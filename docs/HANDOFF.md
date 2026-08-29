@@ -149,7 +149,7 @@ Frontend design은 사용자가 완성된 시안을 먼저 전달해야만 진�
 
 ## 이 인수인계 직전의 제품 조사와 한계
 
-이번 인수인계 문서 작업 직전의 제품 작업은 authenticated Fluently assessment와 초기 결과 흐름을 익명화하여 [COMPETITOR_RESEARCH](COMPETITOR_RESEARCH.md)에 기록한 것이다. 관찰한 핵심은 다음과 같다.
+이번 인수인계 문서 작업 직전의 제품 작업은 authenticated Fluently assessment와 초기 결과 흐름을 익명화하여 [COMPETITOR_RESEARCH](COMPETITOR_RESEARCH.md)에 기록한 것이다. 해당 문서의 `Authenticated session work log`에는 emulator 준비, transient blank/keyboard 문제, owner 로그인과 verification, onboarding, microphone 복구, assessment 완료, result 확인, DNS/sign-out 종료, 임시 자료 미보관까지 실제 작업 순서가 들어 있다. 관찰한 핵심은 다음과 같다.
 
 - assessment 전 목적, 예상 시간, 사용자 통제권, 필요한 말하기 분량을 설명했다.
 - call UI는 관찰된 범위에서 tap-to-start/tap-to-stop 방식이었다.
@@ -167,6 +167,8 @@ Frontend design은 사용자가 완성된 시안을 먼저 전달해야만 진�
 - payment, subscription, notification, account deletion
 
 관찰 도중 Android emulator의 DNS가 끊겼고 sign-out 경로로 들어가 조사를 중단했다. 이는 경쟁 서비스의 정상 동작이나 이 저장소의 오류를 증명하지 않는다. 개인 결과 수치, 발화, screenshot, 계정 정보는 저장하지 않았다.
+
+이 Fluently 조사는 현재 기획 범위에서 완료된 작업이다. Speak AI 개발을 이어가기 위해 새 PC에서 emulator나 Fluently 로그인을 즉시 다시 만들 필요는 없다. 이후의 구체적인 제품 질문에 최신 직접 근거가 필요할 때만 owner가 다시 로그인해 추가 조사한다.
 
 ## 정확한 재개 지점
 
