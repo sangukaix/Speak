@@ -24,6 +24,7 @@ The repository is at Phase 2. A responsive, clickable UI prototype now validates
 
 ## Canonical documentation
 
+- [HANDOFF](HANDOFF.md): active branch, current resume point, machine-local state, fresh Codex prompt, and cross-computer checklist
 - [PRODUCT_BRIEF](PRODUCT_BRIEF.md): learner, product promise, scope, and planning record
 - [COMPETITOR_RESEARCH](COMPETITOR_RESEARCH.md): public research, sources, limits, and conclusions
 - [UX_FOUNDATION](UX_FOUNDATION.md): information architecture, visual system, accessibility, and mock language

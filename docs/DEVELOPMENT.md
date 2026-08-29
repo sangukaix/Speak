@@ -22,4 +22,15 @@ Use npm only. Add Expo-compatible client packages with `npx expo install <packag
 
 ## Git workflow across computers
 
-Before switching computers, run checks, review `git status`, commit source and lock/config templates, then push. On the other computer, pull before editing and recreate local `.env`, `.venv`, caches, and `node_modules`; these are intentionally not shared.
+The current continuation branch is `codex/phase-2-ui-foundation`; `main` does not yet contain Phase 2. Before switching computers, run checks, update [HANDOFF](HANDOFF.md) if the resume point changed, review `git status`, commit only intended source/documentation/config templates, and push.
+
+On the other computer:
+
+```powershell
+git status -sb
+git switch codex/phase-2-ui-foundation
+git pull --ff-only
+git status -sb
+```
+
+Recreate local `.env`, `.venv`, caches, and `node_modules`; these are intentionally not shared. Never move Codex auth files, browser cookies, emulator data, passwords, OTPs, or API keys through Git.

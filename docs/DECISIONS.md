@@ -83,3 +83,13 @@
 **Alternatives:** Platform-varying Unicode glyphs; hand-drawn icon views; a deprecated icon-font package; custom image assets.
 
 **Result:** `AppIcon` owns a small semantic icon map. The required `expo-font` peer and config plugin are installed. Business logic does not depend on either visual package.
+
+## 2026-08-29 — Repository-owned cross-computer handoff
+
+**Decision:** Treat tracked project documentation, especially `AGENTS.md` and `docs/HANDOFF.md`, as the durable continuation context across computers and fresh Codex sessions.
+
+**Reason:** Local chat history, authentication sessions, dependencies, environment files, and emulator state do not reliably travel with a Git clone. Storing secrets or copying auth caches would create a security risk, while a maintained handoff document can preserve the product state and next action without personal data.
+
+**Alternatives:** Depend on the previous chat; copy the entire user profile or Codex home; put account credentials in a private Markdown file.
+
+**Result:** New sessions read `HANDOFF.md` before project context, clone the active branch explicitly, recreate local dependencies from pinned files, and require the owner to complete account login or MFA. Passwords, OTPs, tokens, cookies, service-login identifiers, and API keys are never part of handoff or source documentation. Normal Git remote and author metadata remain subject to the owner's Git/GitHub privacy settings.

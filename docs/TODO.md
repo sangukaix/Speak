@@ -5,6 +5,8 @@
 - [x] Create repository structure and required documentation
 - [x] Pin Node and Python targets and add environment templates
 - [x] Add portable PowerShell setup and run scripts
+- [x] Add a secret-free cross-computer handoff, fresh Codex prompt, and active-branch recovery instructions
+- [x] Ignore local environment variants while keeping safe `.env.example` templates tracked
 
 ## Phase 1 — skeleton
 
