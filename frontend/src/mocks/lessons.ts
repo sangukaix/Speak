@@ -140,6 +140,10 @@ export const lessons: Lesson[] = [
 
 export const featuredLesson = lessons[0];
 
+export function findLessonById(lessonId: string | undefined) {
+  return lessons.find((lesson) => lesson.id === lessonId);
+}
+
 export function getLessonById(lessonId: string | undefined) {
-  return lessons.find((lesson) => lesson.id === lessonId) ?? featuredLesson;
+  return findLessonById(lessonId) ?? featuredLesson;
 }

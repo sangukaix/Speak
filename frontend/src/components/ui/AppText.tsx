@@ -1,5 +1,5 @@
 import type { ReactNode } from 'react';
-import { StyleSheet, Text, type StyleProp, type TextProps, type TextStyle } from 'react-native';
+import { Platform, StyleSheet, Text, type StyleProp, type TextProps, type TextStyle } from 'react-native';
 
 import { colors } from '@/theme/tokens';
 
@@ -21,7 +21,10 @@ export function AppText({ children, color, style, variant = 'body', ...props }: 
 }
 
 const styles = StyleSheet.create({
-  base: { color: colors.ink },
+  base: {
+    color: colors.ink,
+    ...(Platform.OS === 'web' ? { wordBreak: 'keep-all' as const } : {}),
+  },
   display: { fontSize: 38, fontWeight: '800', letterSpacing: -1.4, lineHeight: 44 },
   title: { fontSize: 30, fontWeight: '800', letterSpacing: -0.9, lineHeight: 37 },
   heading: { fontSize: 22, fontWeight: '800', letterSpacing: -0.45, lineHeight: 29 },

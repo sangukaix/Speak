@@ -1,4 +1,4 @@
-import { useRouter } from 'expo-router';
+import { Redirect, useRouter } from 'expo-router';
 import { useCallback, useEffect, useState } from 'react';
 import { ActivityIndicator, Platform, StyleSheet, View } from 'react-native';
 
@@ -36,10 +36,13 @@ export default function HealthScreen() {
   }, []);
 
   useEffect(() => {
+    if (process.env.NODE_ENV === 'production') return;
     void checkBackend();
   }, [checkBackend]);
 
   const connected = connectionState === 'connected';
+
+  if (process.env.NODE_ENV === 'production') return <Redirect href="/" />;
 
   return (
     <Screen>

@@ -15,7 +15,8 @@ export const colors = {
   sunshineSoft: '#FFF4CF',
   success: '#23845F',
   successSoft: '#DDF1E7',
-  danger: '#B95252',
+  danger: '#A63F3F',
+  dangerSoft: '#F8E2E2',
   white: '#FFFFFF',
   overlay: 'rgba(24, 49, 47, 0.08)',
 } as const;

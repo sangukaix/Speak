@@ -7,7 +7,7 @@ Each phase begins after its dependencies are verified. Completion requires imple
 | 0 | Project setup | Versions, repository rules, environment templates, documentation | Fresh Windows setup is documented | None |
 | 1 | Frontend/backend skeleton | Expo Router, FastAPI, health API, CORS, connection UI | Type check, API test, web export pass | 0 |
 | 2 | UI foundation | Research, theme, navigation, reusable primitives, clickable demo loop | Product skeleton, documentation, type check, and cross-platform bundles pass | 1 |
-| 3 | Authentication | Supabase Auth and guarded routes | Signup/login/logout tests pass | 2 |
+| 3 | Authentication | Verified email/password plus Google/Apple Auth, session restore/recovery/deletion, guarded routes, JWT boundary, privacy notice | Auth acceptance matrix passes on supported platforms; invalid API credentials are rejected; no privileged value reaches the client | 2 |
 | 4 | User profile | Level, goals, interests | Profile persists and reloads | 3 |
 | 5 | AI text tutor | Secure backend OpenAI text flow | Conversation and error paths pass | 4 |
 | 6 | OpenAI Realtime | Ephemeral session API | Client obtains scoped credential | 5 |

@@ -8,14 +8,36 @@ import { Button } from '@/components/ui/Button';
 import { Card } from '@/components/ui/Card';
 import { DemoBadge } from '@/components/ui/DemoBadge';
 import { Screen } from '@/components/ui/Screen';
-import { getLessonById } from '@/mocks/lessons';
+import { findLessonById, lessons } from '@/mocks/lessons';
 import { colors, radii, spacing } from '@/theme/tokens';
+
+export function generateStaticParams() {
+  return lessons.map((lesson) => ({ lessonId: lesson.id }));
+}
 
 export default function LessonDetailScreen() {
   const router = useRouter();
   const params = useLocalSearchParams<{ lessonId?: string | string[] }>();
   const lessonId = Array.isArray(params.lessonId) ? params.lessonId[0] : params.lessonId;
-  const lesson = getLessonById(lessonId);
+  const lesson = findLessonById(lessonId);
+
+  if (!lesson) {
+    return (
+      <Screen>
+        <BackButton onPress={() => router.back()} />
+        <View style={styles.missingLesson}>
+          <View style={styles.heroIcon}>
+            <AppIcon color={colors.primary} name="warning" size={27} />
+          </View>
+          <AppText variant="title">레슨을 찾지 못했어요</AppText>
+          <AppText color={colors.inkSoft}>
+            주소가 바뀌었거나 아직 공개되지 않은 레슨입니다. 연습 목록에서 사용할 수 있는 레슨을 골라 주세요.
+          </AppText>
+          <Button label="연습 목록으로" onPress={() => router.replace('/practice')} />
+        </View>
+      </Screen>
+    );
+  }
 
   return (
     <Screen>
@@ -106,6 +128,7 @@ export default function LessonDetailScreen() {
 }
 
 const styles = StyleSheet.create({
+  missingLesson: { gap: spacing.lg, marginTop: spacing.xxxl, maxWidth: 560 },
   topBar: { alignItems: 'center', flexDirection: 'row', justifyContent: 'space-between', marginBottom: spacing.xxxl },
   hero: { gap: spacing.lg },
   heroIcon: {

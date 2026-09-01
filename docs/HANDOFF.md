@@ -1,30 +1,31 @@
 # 다른 컴퓨터·새 Codex 인수인계
 
-Updated: 2026-08-29
+Updated: 2026-09-01
 
 이 문서는 기존 대화 기록이 없는 새 Windows PC와 새 Codex 작업에서 Speak AI 개발을 정확히 이어가기 위한 현재 상태 기록이다. 제품의 장기 기준은 다른 문서에 나누어 보관하고, 이 문서는 **현재 어디까지 왔는지, 무엇을 다음에 해야 하는지, 무엇이 Git으로 이동하지 않는지**를 한곳에 모은다.
 
 ## 가장 먼저 알아야 할 것
 
 - 저장소: `https://github.com/sangukaix/Speak.git`
-- 현재 이어서 작업할 브랜치: `codex/phase-2-ui-foundation`
-- `main`은 아직 Phase 1 상태이므로 현재 작업의 기준이 아니다.
-- 현재 완료 범위: Phase 0, Phase 1, Phase 2
+- 현재 이어서 작업할 로컬 브랜치: `codex/phase-3-authentication`
+- `main`은 현재 prototype/auth checkpoint보다 오래되었으므로 작업 기준이 아니다. 다른 PC로 옮기기 전 이 브랜치를 commit·push해야 한다.
+- 현재 구현 완료 범위: Phase 0, Phase 1, Phase 2와 Phase 3의 navigable email/Google/Apple auth UI/UX checkpoint
+- Phase 3 기술 명세와 account-required 정책이 승인되었고, Supabase dependency/client boundary, secure native session storage, typed auth state, email PKCE 화면, Google OAuth(Android/iOS/web), native Apple(iOS), Apple OAuth(web), root guard, privacy draft, static lesson params가 구현되었다. 실제 Supabase/Google/Apple provider project와 계정 연결은 아직 없다.
 - 현재 구현된 실제 서버 연동: FastAPI `GET /health` 하나
 - 현재 화면의 lesson, progress, profile, session, review, report 데이터는 모두 명시적으로 표시된 고정 Demo/Mock이다.
-- 인증, Supabase, OpenAI, 음성, 저장, 결제, Agent, Avatar는 아직 연결하지 않았다.
+- 실제 Supabase project/email delivery, Google/Apple provider credentials·consent·redirects, installed-device social login, FastAPI protected auth/deletion, OpenAI, 음성, 학습 저장, 결제, Agent, Avatar는 아직 연결하지 않았다.
 - 이전 Codex 대화 기록, 로그인 세션, 로컬 설정은 Git에 포함되지 않는다. 이 문서와 `AGENTS.md`가 새 세션의 지속 가능한 기억이다.
 
 새 PC에서는 다음처럼 브랜치를 지정해 복제한다.
 
 ```powershell
-git clone --branch codex/phase-2-ui-foundation https://github.com/sangukaix/Speak.git
+git clone --branch codex/phase-3-authentication https://github.com/sangukaix/Speak.git
 Set-Location Speak
 git pull --ff-only
 git status -sb
 ```
 
-`git status -sb`의 첫 줄이 `codex/phase-2-ui-foundation`을 가리키는지 확인한다. 자세한 최초 설치는 [SETUP](SETUP.md)을 따른다.
+`git status -sb`의 첫 줄이 `codex/phase-3-authentication`을 가리키는지 확인한다. 자세한 최초 설치는 [SETUP](SETUP.md)을 따른다.
 
 ## 문서 읽기 순서와 기준
 
@@ -34,11 +35,12 @@ git status -sb
 2. [PRODUCT_BRIEF](PRODUCT_BRIEF.md): 사용자, 문제, 제품 약속, 범위
 3. [COMPETITOR_RESEARCH](COMPETITOR_RESEARCH.md): Speak·Fluently 조사와 한계
 4. [UX_FOUNDATION](UX_FOUNDATION.md): 화면 구조, 디자인 원칙, 접근성, Mock 표기
-5. [ARCHITECTURE](ARCHITECTURE.md): 현재 구조와 미래 경계
-6. [DECISIONS](DECISIONS.md): 이미 확정된 기술·제품 결정
-7. [PLAN](PLAN.md), [ROADMAP](ROADMAP.md): phase 의존관계와 MVP/Beta/Production 순서
-8. [TODO](TODO.md): 검증된 완료 상태와 다음 할 일
-9. [SETUP](SETUP.md), [DEVELOPMENT](DEVELOPMENT.md), [TROUBLESHOOTING](TROUBLESHOOTING.md): 실행과 운영
+5. [AUTHENTICATION](AUTHENTICATION.md): Phase 3 상태, 카피, guard, 보안 경계, acceptance test
+6. [ARCHITECTURE](ARCHITECTURE.md): 현재 구조와 미래 경계
+7. [DECISIONS](DECISIONS.md): 이미 확정된 기술·제품 결정
+8. [PLAN](PLAN.md), [ROADMAP](ROADMAP.md): phase 의존관계와 MVP/Beta/Production 순서
+9. [TODO](TODO.md): 검증된 완료 상태와 다음 할 일
+10. [SETUP](SETUP.md), [DEVELOPMENT](DEVELOPMENT.md), [TROUBLESHOOTING](TROUBLESHOOTING.md): 실행과 운영
 
 문서끼리 충돌하면 실제 소스와 잠금 파일을 확인하고 문서를 함께 고친다. 비밀정보에 대해서는 항상 가장 보수적인 규칙을 따른다.
 
@@ -87,6 +89,11 @@ Frontend design은 사용자가 완성된 시안을 먼저 전달해야만 진�
 - 44px 이상 터치 영역, semantic icon, 760px 최대 폭의 반응형 light-only UI
 - `calm momentum` 시각 방향: deep green, warm off-white, coral accent
 - 실제 `GET /health`를 확인하는 developer screen
+- Google·Apple·email sign-in, sign-up, email verification, neutral recovery request, PKCE callback, password reset, restore-error, privacy draft 화면
+- Android/iOS/web Google PKCE OAuth, iOS native Apple nonce/ID-token exchange, web Apple PKCE OAuth의 platform-specific code path와 UI
+- Supabase JS client의 explicit PKCE 설정과 web/native 분리 session storage; native는 SecureStore key + AsyncStorage ciphertext를 사용하며 plaintext fallback이 없음
+- `booting`, `restoreError`, `signedOut`, `awaitingVerification`, `recovering`, `signedIn`, `signingOut` typed auth state
+- 현재 tabs/lesson 전체 root guard, development-only auth walkthrough/health routes, static web lesson deep links
 
 ### Backend
 
@@ -120,8 +127,9 @@ Frontend design은 사용자가 완성된 시안을 먼저 전달해야만 진�
 
 ## 아직 구현하지 않은 것
 
-- 회원가입, 로그인, 로그아웃, 계정 복구, route guard
-- Supabase project, schema, migration, database persistence
+- 실제 Supabase/Google/Apple project, 실제 회원가입·로그인·email delivery·OAuth consent·deep-link device 검증
+- account deletion reauthentication, FastAPI JWT/session validation, protected API
+- Supabase schema, migration, application database persistence
 - OpenAI text 또는 Realtime 호출
 - microphone, recording, ASR, WebRTC, live transcript, pronunciation scoring
 - 실제 lesson session/report/history/memory/planner
@@ -133,19 +141,23 @@ Frontend design은 사용자가 완성된 시안을 먼저 전달해야만 진�
 
 ## 현재 검증 기준과 한계
 
-2026-08-29 인수인계 작업에서 다음을 다시 실행했다.
+2026-09-01 집 Windows PC의 `D:\pp2026\Speak`에서 dependencies를 lock file 기준으로 다시 설치한 뒤 다음을 실행했다.
 
-- Backend: `2 passed`
-- Frontend: `npm run typecheck` 통과
-- Expo: `npx expo export --platform all`로 iOS, Android, Web bundle 생성 통과
+- Backend: Python 3.13.15에서 `2 passed`, `pip check` 통과
+- Frontend: `npm ci`, social auth 추가 후 `npm run typecheck`, `npm ls --all` 통과
+- Expo: `expo-doctor` 21/21 통과
+- Expo: social auth 추가 후 Expo Doctor 21/21, `npx expo export --platform all`로 iOS, Android, Web bundle과 26개 static route 생성 통과
+- Browser: desktop/390px Google·Apple·email sign-in UI, all auth-state route navigation, callback error state, OAuth `access_denied`의 sign-in 복귀, privacy notice, signed-out `/practice` direct-access redirect 확인
+
+Phase 2 branch로 전환했을 때 ignored `.expo/types/router.d.ts`가 Phase 1 경로만 가진 오래된 cache여서 route type 오류 9개가 발생했다. 실제 route source는 정상이었고, `expo customize tsconfig.json`으로 declarations를 재생성하면 모두 통과했다. 재발 방지를 위해 `npm run typecheck`는 `npm run typegen`을 먼저 실행하며 `scripts/setup.ps1`도 설치 직후 같은 declarations를 생성한다. `.expo` cache 자체는 계속 Git에 넣지 않는다.
 
 주의할 한계:
 
-- 현재 backend test는 기존 ignored `.venv`의 Python 3.12.13에서 통과했다. Repository target인 Python 3.13 검증은 새 PC에서 venv를 다시 만든 뒤 수행해야 한다.
 - GitHub Actions나 다른 CI configuration은 아직 없다.
 - Frontend unit test와 E2E test suite는 아직 없다.
 - Expo export는 bundle 생성 검사이며 실제 Android/iOS device의 시각·상호작용 검증이 아니다.
-- 새 PC에서는 dependency 설치 후 같은 검사를 다시 실행하고, 실행하지 않은 검증을 통과했다고 기록하지 않는다.
+- npm audit에는 Expo/Expo Router transitive dependency 경로의 moderate advisory 13개가 남아 있다. 현재 공식 호환 버전에서는 강제 수정이 Expo 46 또는 호환되지 않는 Router 버전을 제안하므로 `npm audit fix --force`를 실행하지 않는다.
+- 다른 PC에서는 dependency 설치 후 같은 검사를 다시 실행하고, 실행하지 않은 검증을 통과했다고 기록하지 않는다.
 
 ## 이 인수인계 직전의 제품 조사와 한계
 
@@ -172,15 +184,18 @@ Frontend design은 사용자가 완성된 시안을 먼저 전달해야만 진�
 
 ## 정확한 재개 지점
 
-Phase 2 기준선을 유지하면서 다음 순서로 진행한다.
+Phase 2 기준선과 현재 email/social auth UI checkpoint를 유지하면서 다음 순서로 진행한다.
 
-1. 사용자가 참여할 수 있을 때 작업명, 한국어 카피, `calm momentum` 시각 방향, workplace-English launch wedge를 실제 대상 학습자에게 검토한다. 이는 개발을 멈추게 하는 선행 조건이 아니라 병렬 validation track이다.
-2. 새 Codex가 즉시 수행할 다음 작업은 Supabase를 설치하기 전의 Phase 3 인증 명세다.
-3. 인증 명세에는 auth method/provider 선택, signed-out, sign-in, sign-up, 선택된 방법의 verification, recovery, loading, cancellation, error, logout, route guard, privacy copy, acceptance test가 포함되어야 한다.
-4. 결제 전에 제공할 한 번의 완전한 free learning loop를 결정한다.
-5. Phase 3 결정과 acceptance criteria가 확정된 뒤 가장 작은 authentication boundary를 구현한다. Persisted profile은 Phase 3 통과 후 Phase 4에서 다룬다.
+1. Owner가 승인해 `com.sangukaix.speakai`를 iOS bundle identifier와 Android package에 설정했다. 실제 provider/store 등록에서도 이 값을 유지하고, 변경이 필요하면 등록 전에 명시적으로 결정한다.
+2. Owner-controlled Supabase development project를 만들고 owner가 로그인/MFA/region 선택을 직접 완료한다. Region, email confirmation, exact development redirect allowlist, password/rate-limit 설정만 secret 없이 기록한다.
+3. Owner-controlled Google Auth Platform과 Apple Developer 등록을 만들고 Google OAuth와 Apple native/web 설정을 Supabase에 연결한다. Client secret, Apple private key, generated secret은 console에만 두고 prompt·logs·Git에 남기지 않는다.
+4. 실제 `EXPO_PUBLIC_SUPABASE_URL`과 publishable key는 로컬 `frontend/.env`에만 넣고 email + Google + Apple flow를 지원 플랫폼에서 검증한다. 먼저 web/Android, 이후 macOS와 실제 iPhone에서 Apple native를 검증한다.
+5. 동일 verified email automatic linking, Apple private relay 분리, 취소, provider-disabled, cold callback, token 미노출을 acceptance matrix로 확인한다.
+6. FastAPI JWT/signature/issuer/audience/session validation과 CORS preflight tests를 구현한 뒤 password 또는 같은 social provider의 fresh signed `amr` proof를 사용하는 `DELETE /account`를 추가한다.
+7. Deletion revocation, privacy processor/region/retention, SMTP/abuse/age gates를 검증한다. Profile onboarding과 저장은 Phase 4 전까지 만들지 않는다.
+8. 사용자가 참여할 수 있을 때 전체 auth/learning 흐름, 작업명, 한국어 카피, `calm momentum` 시각 방향, workplace-English launch wedge를 검토한다.
 
-새 Codex가 바로 코드를 추가하기보다 먼저 할 권장 작업은 **Phase 3 authentication specification**이다. 실제 Supabase 연결, OpenAI, 음성, 결제는 이 설계가 끝나기 전에 미리 만들지 않는다.
+새 Codex가 즉시 다시 작성할 것은 인증 화면이나 social auth client가 아니다. `com.sangukaix.speakai`를 유지하면서 **owner-controlled Supabase/Google/Apple provider connection과 실제 platform acceptance test**를 이어간다. 그다음 가장 작은 protected backend boundary로 간다. OpenAI, 음성, profile persistence, 결제는 여전히 범위 밖이다.
 
 열린 제품 결정:
 
@@ -220,9 +235,11 @@ Handoff와 source 문서에는 로그인용 개인 이메일, 비밀번호, OTP,
 | ChatGPT/Codex | 개발을 Codex로 이어갈 때 필요 | ChatGPT desktop app 또는 Codex IDE extension에서 본인이 browser login 완료 |
 | Fluently | 제품 기능 구현에는 불필요, 추가 경쟁 조사를 할 때만 필요 | 기존 owner-controlled 계정으로 본인이 로그인하고 이메일 MFA가 나오면 직접 완료 |
 | Google Play | Android emulator에서 Fluently를 다시 설치할 때만 필요 | 본인이 emulator Play Store에 로그인; session은 이전되지 않음 |
-| OpenAI API | Phase 2와 다음 인증 명세에는 불필요 | key를 만들거나 입력하지 않음 |
-| Supabase | Phase 2와 인증 명세에는 불필요 | project/key를 아직 만들거나 입력하지 않음 |
-| Expo/EAS, Apple Developer, Google Play Console | 현재 필요하거나 구성되지 않음 | distribution phase 전에는 계정·project·certificate를 만들지 않음 |
+| OpenAI API | Phase 3 인증 구현에는 불필요 | key를 만들거나 입력하지 않음 |
+| Supabase | UI review 승인 뒤 owner-controlled development project 필요 | owner가 로그인·MFA·region 선택을 완료하고 실제 key 값은 prompt나 문서에 넣지 않음 |
+| Google Auth Platform | 실제 Google 로그인 검증부터 필요, 아직 구성되지 않음 | owner가 로그인/MFA·consent screen·OAuth client 설정을 직접 완료하고 secret은 Supabase console에만 입력 |
+| Apple Developer | 실제 iOS Apple/web Apple 검증부터 필요, 아직 구성되지 않음 | `com.sangukaix.speakai` App ID와 Services ID 기준으로 owner가 capability·key를 생성; private key와 generated secret은 prompt/Git 금지 |
+| Expo/EAS, Google Play Console | installed development build 또는 distribution 때 필요 | `com.sangukaix.speakai` 기준으로 owner 계정에서 구성; keystore/certificate는 Git 금지 |
 | Payment/hosting providers | 현재 필요하거나 구성되지 않음 | payment/deployment phase 전에는 연결하지 않음 |
 
 비밀번호는 password manager로만 옮기고 로그인 화면에 사용자가 직접 입력한다. Codex의 `auth.json`, 브라우저 cookie, emulator data directory를 다른 PC로 복사하지 않는다.
@@ -262,7 +279,7 @@ Handoff와 source 문서에는 로그인용 개인 이메일, 비밀번호, OTP,
 3. 현재 branch를 지정해 clone한다.
 4. root `.env.example`을 root `.env`로 복사한다. 계획된 key 값은 비워 둔다.
 5. `frontend/.env`는 custom API URL이 필요할 때만 만든다.
-6. `./scripts/setup.ps1`로 dependencies와 `.venv`를 재생성한다.
+6. `./scripts/setup.ps1`로 dependencies, Expo typed-route declarations, `.venv`를 재생성한다.
 7. backend tests, frontend typecheck, Expo exports를 실행한다.
 8. backend와 원하는 frontend platform을 별도 terminal에서 실행한다.
 
@@ -281,15 +298,15 @@ Handoff와 source 문서에는 로그인용 개인 이메일, 비밀번호, OTP,
 ```text
 이 저장소는 기존 Speak AI 프로젝트를 다른 Windows PC에서 이어서 작업하는 것이다. 이 PC와 이 Codex 작업에는 이전 대화 기록이 없다.
 
-먼저 어떤 파일도 수정하지 말고 현재 브랜치가 codex/phase-2-ui-foundation인지 확인한 뒤 git status, 최근 log, remote 동기화 상태를 읽기 전용으로 점검해줘. 그다음 AGENTS.md에 적힌 순서대로 필수 문서를 전부 읽고, 특히 docs/HANDOFF.md의 현재 상태와 재개 지점을 기준으로 삼아줘.
+먼저 어떤 파일도 수정하지 말고 현재 브랜치가 codex/phase-3-authentication인지 확인한 뒤 git status, 최근 log, remote 동기화 상태를 읽기 전용으로 점검해줘. 그다음 AGENTS.md에 적힌 순서대로 필수 문서를 전부 읽고, 특히 docs/HANDOFF.md의 현재 상태와 재개 지점을 기준으로 삼아줘.
 
-현재 Phase 2까지 완료되었고 Expo 기반의 명시적 Mock UI와 FastAPI GET /health만 구현되어 있다. 실제 AI, 음성, 인증, 데이터베이스, 결제, 학습 저장, Agent, Avatar는 아직 연결되지 않았다. Mock을 실제 기능처럼 설명하지 말고 이 범위를 보존해줘.
+현재 Phase 2와 Phase 3 email/social auth UI/UX checkpoint까지 구현되었다. Supabase boundary, secure native session adapter, typed state, email screens, Google OAuth(Android/iOS/web), native Apple(iOS), Apple OAuth(web), PKCE callback, root guards, privacy draft는 있지만 실제 Supabase/Google/Apple project/config가 비어 있어 계정 요청은 보내지 않는다. FastAPI의 실제 연동은 GET /health뿐이며 데이터베이스, protected API/deletion, AI, 음성, 결제, 학습 저장, Agent, Avatar는 연결되지 않았다. UI와 Mock을 실제 provider 검증 완료처럼 설명하지 말고 이 범위를 보존해줘.
 
 새 PC에서 Git, Node 24.18.0, npm 11+, Python 3.13 설치 상태를 확인하고 docs/SETUP.md대로 local .env와 dependency를 재생성해줘. 기존 PC의 .venv, node_modules, Codex auth/session은 복사하지 않는다. 비밀번호, OTP, 개인 이메일, Google/Fluently 로그인 정보, API key는 요청하거나 Git에 저장하지 말고, 로그인이 필요하면 내가 직접 입력하도록 안내해줘.
 
 Bootstrap 후 backend pytest, frontend typecheck, Expo web/all export를 실행해 현재 기준선을 검증해줘. 문제가 있으면 원인을 먼저 설명하고 가장 작은 안전한 수정만 해줘.
 
-검증이 끝나면 docs/TODO.md의 Next phase를 따라 이어가되, 우선 Phase 3의 인증 상태, 개인정보 안내 문구, route guard, acceptance test를 문서와 설계 수준에서 확정해줘. Supabase나 OpenAI를 설계 전에 미리 연결하지 마.
+검증이 끝나면 `com.sangukaix.speakai`를 유지해 owner-controlled Supabase/Google/Apple project를 준비하고 실제 email·Google·Apple flow를 지원 플랫폼의 installed build에서 검증한 다음 FastAPI JWT/session/deletion 경계를 acceptance-test 순서로 구현해. Secret이나 Apple private key를 prompt·Git·log에 넣지 말고, OpenAI, profile persistence, 음성, 결제는 추가하지 마.
 
 작업 전에는 간단한 계획과 가정을 알려주고, 완료 후에는 변경 파일, 실행한 검증, 남은 미검증 사항, 다음 권장 작업을 보고해줘.
 ```
@@ -308,7 +325,7 @@ Bootstrap 후 backend pytest, frontend typecheck, Expo web/all export를 실행�
 
 ```powershell
 git status -sb
-git switch codex/phase-2-ui-foundation
+git switch codex/phase-3-authentication
 git pull --ff-only
 git status -sb
 ```

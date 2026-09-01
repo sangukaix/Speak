@@ -22,7 +22,15 @@ export type AppIconName =
   | 'target'
   | 'micOff'
   | 'info'
-  | 'chart';
+  | 'chart'
+  | 'mail'
+  | 'lock'
+  | 'eye'
+  | 'eyeOff'
+  | 'warning'
+  | 'refresh'
+  | 'logout'
+  | 'trash';
 
 type SymbolName = ComponentProps<typeof SymbolView>['name'];
 
@@ -47,6 +55,14 @@ const symbolNames: Record<AppIconName, SymbolName> = {
   micOff: { ios: 'mic.slash.fill', android: 'mic_off', web: 'mic_off' },
   info: { ios: 'info.circle.fill', android: 'info', web: 'info' },
   chart: { ios: 'chart.bar.fill', android: 'bar_chart', web: 'bar_chart' },
+  mail: { ios: 'envelope.fill', android: 'mail', web: 'mail' },
+  lock: { ios: 'lock.fill', android: 'lock', web: 'lock' },
+  eye: { ios: 'eye.fill', android: 'visibility', web: 'visibility' },
+  eyeOff: { ios: 'eye.slash.fill', android: 'visibility_off', web: 'visibility_off' },
+  warning: { ios: 'exclamationmark.triangle.fill', android: 'warning', web: 'warning' },
+  refresh: { ios: 'arrow.clockwise', android: 'refresh', web: 'refresh' },
+  logout: { ios: 'rectangle.portrait.and.arrow.right', android: 'logout', web: 'logout' },
+  trash: { ios: 'trash.fill', android: 'delete', web: 'delete' },
 };
 
 type AppIconProps = {

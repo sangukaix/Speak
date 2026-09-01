@@ -1,6 +1,6 @@
 # Speak AI
 
-Speak AI is a cross-platform English speaking coach in its foundation stage. The repository implements Phases 0–2: portable setup, an Expo Router client, a FastAPI health endpoint, and a responsive clickable product prototype. All lesson, progress, session, and report content in Phase 2 is explicitly labeled demo content; AI, voice, accounts, and persistence are not connected.
+Speak AI is a cross-platform English speaking coach in its foundation stage. The repository implements Phases 0–2 plus the current Phase 3 authentication UI checkpoint: portable setup, an Expo Router client, a FastAPI health endpoint, a responsive clickable learning prototype, typed authentication state, guarded routes, and a navigable email/Google/Apple account entry flow. All lesson, progress, session, and report content remains explicitly labeled demo content. The Supabase client is intentionally inactive until an owner-controlled project is configured.
 
 ## Current features
 
@@ -11,17 +11,20 @@ Speak AI is a cross-platform English speaking coach in its foundation stage. The
 - Three fixed sample lessons and clearly labeled sample review content
 - FastAPI `GET /health` endpoint
 - Preserved developer health screen that performs the real client-to-server check
+- Sign-in with email plus Google on Android/iOS/web and Apple on iOS/web, with sign-up, email verification, recovery, callback, reset, restore-error, privacy, and developer-preview screens
+- Typed Supabase Auth boundary with PKCE OAuth, native Apple nonce verification, secure native session storage, and root protection for every current learner route
 - Environment-based, explicit development CORS origins
 - Automated backend health test and frontend TypeScript check
 - Product brief, competitor research, UX rules, architecture, and delivery documentation for later phases
 
-No AI, authentication, database, payment, or speech integration is implemented yet.
+No live Supabase/provider configuration, real user account, protected FastAPI endpoint, account deletion, AI, learning database, payment, or speech integration is connected yet.
 
 ## Technology
 
 - Node.js 24.18.0 LTS, npm, Expo SDK 57, Expo Router, Expo Symbols, React Native 0.86.3, React 19.2.3, TypeScript 6.0
 - Python 3.13, FastAPI 0.141.1, Uvicorn 0.52.4, Pydantic 2.13.4
-- Planned: Supabase/PostgreSQL and OpenAI Realtime/WebRTC
+- Supabase JS, Expo SecureStore, WebBrowser, AppleAuthentication, and Crypto for the inactive Phase 3 authentication boundary
+- Planned: Supabase/PostgreSQL persistence and OpenAI Realtime/WebRTC
 
 ## Repository layout
 
@@ -49,10 +52,10 @@ No AI, authentication, database, payment, or speech integration is implemented y
 
 ## Continue on a new Windows computer
 
-The latest Phase 2 work is on `codex/phase-2-ui-foundation`; `main` is still the earlier foundation. Clone the active branch explicitly:
+The current Phase 3 continuation work is on `codex/phase-3-authentication`; `main` is still the earlier foundation. After that branch is committed and pushed, clone it explicitly:
 
 ```powershell
-git clone --branch codex/phase-2-ui-foundation https://github.com/sangukaix/Speak.git
+git clone --branch codex/phase-3-authentication https://github.com/sangukaix/Speak.git
 Set-Location Speak
 git pull --ff-only
 git status -sb
@@ -70,7 +73,7 @@ Set-ExecutionPolicy -Scope Process Bypass
 ./scripts/setup.ps1
 ```
 
-The planned OpenAI and Supabase values remain blank in Phase 2. When `EXPO_PUBLIC_API_BASE_URL` is unset, the source selects `localhost` for web/iOS and `10.0.2.2` for an Android emulator. Create `frontend/.env` from its example only when overriding that URL, such as for a physical device. Never commit local environment files.
+OpenAI and Supabase values remain blank until the owner creates the development project. With blank frontend Supabase values, the authentication UI runs in clearly labeled review mode and sends no account request. When `EXPO_PUBLIC_API_BASE_URL` is unset, the source selects `localhost` for web/iOS and `10.0.2.2` for an Android emulator. Never commit local environment files.
 
 ## Run the backend
 
@@ -105,4 +108,4 @@ npx expo export --platform all
 
 Commit source, documentation, lock files, requirements, tests, and `.env.example`. Do not commit any local `.env*` variant, tokens, API keys, `node_modules`, `.venv`, Expo cache, or build output. Run `git status` before every push.
 
-Start with the [cross-computer handoff](docs/HANDOFF.md), [product brief](docs/PRODUCT_BRIEF.md), [competitor research](docs/COMPETITOR_RESEARCH.md), [UX foundation](docs/UX_FOUNDATION.md), [SETUP](docs/SETUP.md), [DEVELOPMENT](docs/DEVELOPMENT.md), and the [documentation index](docs/PROJECT_CONTEXT.md).
+Start with the [cross-computer handoff](docs/HANDOFF.md), [product brief](docs/PRODUCT_BRIEF.md), [competitor research](docs/COMPETITOR_RESEARCH.md), [UX foundation](docs/UX_FOUNDATION.md), [Phase 3 authentication specification](docs/AUTHENTICATION.md), [SETUP](docs/SETUP.md), [DEVELOPMENT](docs/DEVELOPMENT.md), and the [documentation index](docs/PROJECT_CONTEXT.md).

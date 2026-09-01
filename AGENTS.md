@@ -10,16 +10,17 @@ Read, in order:
 4. `docs/HANDOFF.md`
 5. `docs/PROJECT_CONTEXT.md`
 6. `docs/ARCHITECTURE.md`
-7. `docs/DECISIONS.md`
-8. `docs/PLAN.md`
-9. `docs/TODO.md`
-10. The relevant source and tests
+7. `docs/AUTHENTICATION.md`
+8. `docs/DECISIONS.md`
+9. `docs/PLAN.md`
+10. `docs/TODO.md`
+11. The relevant source and tests
 
 ## Working rules
 
 - Analyze the existing behavior and impact before editing.
 - Preserve working features unless the requested change explicitly replaces them.
-- Stay within the requested phase and scope. Do not prebuild OpenAI, Supabase, payments, agents, or avatars.
+- Stay within the requested phase and scope. Supabase work is limited to the approved Phase 3 authentication boundary; do not prebuild OpenAI, payments, agents, or avatars.
 - Prefer readable, direct code and the smallest justified dependency set.
 - Avoid `any`; keep shared TypeScript types near their domain.
 - Add every Python import dependency to the appropriate requirements file.

@@ -54,7 +54,26 @@ src/app/lesson/report.tsx         Example report
 src/app/developer/health.tsx      Real backend health check
 ```
 
-Authentication, onboarding, assessment, subscription, and real learning history are planned routes only. They must not be added until their phase begins.
+Authentication has reached its Phase 3 navigable UI/UX checkpoint, including platform-specific social entry. Onboarding remains Phase 4; assessment, subscription, and real learning history remain later planned routes. No live Supabase, Google, or Apple provider project is connected at this checkpoint.
+
+### Implemented Phase 3 auth routes
+
+```text
+/                         Session bootstrap and state resolution
+/auth/sign-in             Google/Apple (by platform) and email/password sign-in
+/auth/sign-up             Account creation and privacy summary
+/auth/verify              Verification explanation and resend
+/auth/recovery            Neutral password-reset request
+/auth/reset               Valid recovery session only
+/auth/callback            PKCE callback handling
+/auth/restore-error       Safe session-restore recovery
+/privacy                  Public full notice
+/developer/auth-preview   Development-only state walkthrough
+```
+
+The owner approved an account-required Phase 3 app, so the root stack protects all existing tabs and lesson screens together. Any future free experience uses a separate `/demo` tree and requires its own review. The sign-in screen presents Apple first on iOS, Google on Android/iOS, Google and Apple on web, then a clearly divided email path. iOS uses Apple's official native button whenever the provider is configured and idle. Auth screens otherwise use the same calm, focused hierarchy as lesson preview: one title, short explanation, fields, one primary action, and recovery links. The implemented state model covers bootstrap, restore failure, signed out, verification wait, recovery, signed in, and blocking sign-out. Generic service-error mapping exists; real provider cancellation/offline/rate-limit behavior remains to be tested after project connection. A session bootstrap keeps the launch surface visible so protected content never flashes before authentication resolves.
+
+Auth fields must support password managers, paste, autofill semantics, keyboard navigation, screen-reader labels, and focus on the first actionable error. Password visibility controls need accessible names; errors and status changes need announcements. Existing 44 × 44 px targets and non-color-only states remain mandatory.
 
 ## Screen hierarchy
 

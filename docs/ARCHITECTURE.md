@@ -6,17 +6,15 @@
 Web / Android / iOS
         |
 Expo + React Native + Expo Router
-        |
-        | REST: GET /health (developer screen only)
-        v
-FastAPI
+        |-- Supabase Auth client (email + Google/Apple code paths; inactive until project/provider config exists)
+        `-- REST: GET /health (developer screen only) --> FastAPI
 ```
 
-The frontend contains no secrets. Its only current API configuration is the public base URL. FastAPI loads private configuration from environment variables, owns CORS policy, validates responses with Pydantic, and exposes routes through a central router.
+The frontend contains no secrets. It accepts a public API base URL plus the Supabase project URL and publishable key; the latter two remain blank locally, so no real account traffic occurs. FastAPI loads private configuration from environment variables, owns CORS policy, validates responses with Pydantic, and exposes routes through a central router.
 
 Phase 2 product screens do not call the API. They use fixed local data under `frontend/src/mocks`, and the interface labels that data as demo or example content. The original health check remains functional under `src/app/developer/health.tsx`.
 
-Supabase, OpenAI, and external speech services are planned boundaries and are not connected.
+The Supabase Auth client boundary and platform-specific social entry code are implemented but unconfigured. No Supabase project, Google/Apple provider credentials, protected FastAPI auth, application database, OpenAI, or external speech service is connected.
 
 ## Frontend structure
 
@@ -24,13 +22,17 @@ Supabase, OpenAI, and external speech services are planned boundaries and are no
 frontend/src/
 |-- app/
 |   |-- (tabs)/                 Home, Practice, Review, Profile
+|   |-- auth/                   Sign-in, sign-up, verification, recovery, callback, reset, restore failure
 |   |-- lesson/                 Preview, scripted session, example report
-|   |-- developer/health.tsx    Real GET /health verification
-|   |-- _layout.tsx             Root stack
-|   `-- index.tsx               Tab redirect
+|   |-- developer/              Development-only auth preview and real GET /health verification
+|   |-- privacy.tsx             Public privacy-development draft
+|   |-- _layout.tsx             Auth provider and protected root stack
+|   `-- index.tsx               Deterministic auth-state redirect
 |-- components/
-|   |-- ui/                     Accessible visual primitives
+|   |-- auth/                   Shared account shells and global auth states
+|   |-- ui/                     Accessible visual and form primitives
 |   `-- lesson/                 Current lesson domain UI
+|-- features/auth/              Typed state, PKCE/social client, safe flow context, session storage
 |-- features/lessons/types.ts   Shared lesson and review domain types
 |-- mocks/                      Explicit fixed demo content
 `-- theme/tokens.ts             Color, spacing, radius, layout, shadow tokens
@@ -38,7 +40,7 @@ frontend/src/
 
 Expo Router groups the four persistent tabs. Lesson screens live in the root stack, which removes tab navigation during the focused learning flow. The shared `Screen` component centers web content at a maximum width while keeping the same mobile information hierarchy.
 
-`expo-symbols` and its required `expo-font` peer are the only Phase 2 runtime dependency additions. Expo Symbols maps SF Symbols on iOS and Material Symbols on Android and web. No navigation state, server cache, analytics, database client, or AI SDK was added.
+Phase 3 adds `@supabase/supabase-js`, URL/random-value polyfills, Expo SecureStore, WebBrowser, AppleAuthentication, Crypto, AsyncStorage, and AES support. Native session ciphertext is stored in AsyncStorage while the per-value encryption key is kept in platform-protected SecureStore; plaintext AsyncStorage is not used as a fallback. Web currently uses localStorage and still requires CSP/XSS review before deployment. No server cache, analytics, application database client, or AI SDK was added.
 
 ## Data and behavior boundaries
 
@@ -48,7 +50,7 @@ Expo Router groups the four persistent tabs. Lesson screens live in the root sta
 - Completing a scripted session does not create history, progress, a streak, or a learner record.
 - The example report does not calculate or persist a score.
 - The profile screen describes future memory controls but does not store a profile.
-- `EXPO_PUBLIC_API_BASE_URL` remains the only client environment variable.
+- `EXPO_PUBLIC_API_BASE_URL`, `EXPO_PUBLIC_SUPABASE_URL`, and `EXPO_PUBLIC_SUPABASE_PUBLISHABLE_KEY` are the only client environment variables. The Supabase pair is blank at this checkpoint.
 
 ## Planned service boundaries
 
@@ -64,6 +66,29 @@ Expo client
 ```
 
 For Realtime, the client will request a short-lived, scoped credential from FastAPI. The permanent OpenAI key remains on the server. WebRTC then carries media directly between the client and Realtime where supported.
+
+### Phase 3 authentication boundary
+
+```text
+Expo client
+  |-- publishable key ----------> Supabase Auth
+  |                                 |-- verified email/password
+  |                                 |-- Google OAuth (Android, iOS, web)
+  |                                 |-- Apple native ID token (iOS)
+  |                                 |-- Apple OAuth (web)
+  |                                 `-- access + refresh session
+  |
+  `-- learner bearer JWT --------> FastAPI
+                                    |-- verify issuer/audience/signature/expiry
+                                    `-- privileged account deletion (server secret only)
+
+Future user-owned tables
+  `-- authenticated role + least grants + RLS scoped to auth user ID
+```
+
+The client calls Auth directly so FastAPI never receives a password or third-party ID token. Google uses a Supabase PKCE OAuth browser session on native and web. iOS Apple login uses Apple's native sheet with a random SHA-256 nonce and exchanges the returned identity token directly with Supabase; web Apple uses PKCE OAuth. The publishable key is intentionally exposable, but requests made with it retain the permissions granted to the relevant database role; every exposed table still needs least-privilege grants and RLS. Expo Router guards prevent accidental navigation and protected-screen disclosure; they are not a security boundary. FastAPI JWT/session checks and future database grants/RLS enforce authorization. All existing tabs and lesson routes are account-required in Phase 3. A future free experience uses a separate `/demo` tree. The development health diagnostic remains independent of learner authentication in development and is blocked from direct production navigation.
+
+Phase 3 does not create profile or learning tables. Native long-lived session credentials require provider-compatible platform-protected storage; ordinary plaintext AsyncStorage is not an accepted fallback. Web storage receives a separate XSS/CSP review before public deployment.
 
 ## Portability
 

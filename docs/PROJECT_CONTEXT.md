@@ -18,9 +18,9 @@ The MVP will validate authentication, profile, text tutor, lesson sessions, repo
 
 ## Technology and current stage
 
-The client is Expo/React Native/TypeScript with Expo Router, Expo Symbols, and React Native Web. The server is FastAPI. Supabase and OpenAI are planned integrations.
+The client is Expo/React Native/TypeScript with Expo Router, Expo Symbols, React Native Web, and an inactive Supabase Auth client boundary for email, Google, and Apple. The server is FastAPI. An owner-controlled Supabase project and social-provider credentials, protected backend authentication, application persistence, and OpenAI remain unconnected.
 
-The repository is at Phase 2. A responsive, clickable UI prototype now validates the intended learning loop across web, Android, and iOS code paths. Its lesson data, progress, scripted session, and report are fixed mocks labeled in the UI. The FastAPI health connection remains the only functional client-server integration.
+Phases 0–2 are implemented and the application is at the Phase 3 UI/UX checkpoint. A responsive, clickable prototype validates the intended learning loop across web, Android, and iOS code paths; its lesson data, progress, scripted session, and report remain fixed mocks labeled in the UI. The typed authentication state, PKCE client setup, secure native session adapter, email flow, Google OAuth on Android/iOS/web, native Apple login on iOS, Apple OAuth on web, privacy draft, static lesson deep links, and root guards are implemented. The owner approved an account-required current app with any future free experience isolated under `/demo`. The FastAPI health check remains the only live client-server integration because no Supabase project or credentials are configured yet.
 
 ## Canonical documentation
 
@@ -28,6 +28,7 @@ The repository is at Phase 2. A responsive, clickable UI prototype now validates
 - [PRODUCT_BRIEF](PRODUCT_BRIEF.md): learner, product promise, scope, and planning record
 - [COMPETITOR_RESEARCH](COMPETITOR_RESEARCH.md): public research, sources, limits, and conclusions
 - [UX_FOUNDATION](UX_FOUNDATION.md): information architecture, visual system, accessibility, and mock language
+- [AUTHENTICATION](AUTHENTICATION.md): Phase 3 identity states, route guards, privacy copy, security boundaries, and acceptance tests
 - [ARCHITECTURE](ARCHITECTURE.md): current technical structure and planned service boundaries
 - [DECISIONS](DECISIONS.md): durable product and technical decisions
 - [PLAN](PLAN.md) and [ROADMAP](ROADMAP.md): delivery sequence

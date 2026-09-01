@@ -1,18 +1,18 @@
 # Troubleshooting
 
-## A fresh clone only shows the Phase 1 foundation
+## A fresh clone does not show the Phase 3 authentication UI checkpoint
 
-The current Phase 2 work is on `codex/phase-2-ui-foundation`, while `main` is older. Run:
+The current continuation work is on `codex/phase-3-authentication`, while `main` is older. Run after the branch has been pushed:
 
 ```powershell
 git fetch origin
 git status -sb
-git switch codex/phase-2-ui-foundation
+git switch codex/phase-3-authentication
 git pull --ff-only
 git status -sb
 ```
 
-If the branch is not present locally, use `git switch --track origin/codex/phase-2-ui-foundation`.
+If the branch is not present locally but exists on the remote, use `git switch --track origin/codex/phase-3-authentication`. If it has not been pushed yet, finish and push it from the current PC first.
 
 ## A new Codex session does not know the previous conversation
 

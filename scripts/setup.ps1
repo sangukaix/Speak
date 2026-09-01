@@ -7,6 +7,7 @@ $VenvPython = Join-Path $ProjectRoot '.venv\Scripts\python.exe'
 Push-Location $FrontendPath
 try {
     npm ci
+    npm run typegen
 } finally {
     Pop-Location
 }
