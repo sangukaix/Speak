@@ -239,7 +239,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       options: { emailRedirectTo: callbackUrl() },
       type: 'signup',
     });
-    if (error) throw error;
+    if (error) {
+      await clearAuthFlowContext();
+      throw error;
+    }
     setState((current) => ({
       ...current,
       emailHint: maskEmail(normalizedEmail),

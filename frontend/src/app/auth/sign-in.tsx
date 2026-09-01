@@ -14,6 +14,7 @@ import { TextLink } from '@/components/ui/TextLink';
 import { getAuthErrorMessage } from '@/features/auth/errors';
 import { useAuth } from '@/features/auth/AuthProvider';
 import type { SocialAuthProvider } from '@/features/auth/socialAuth.types';
+import { validateEmail } from '@/features/auth/validation';
 import { colors, spacing } from '@/theme/tokens';
 
 export default function SignInScreen() {
@@ -54,7 +55,7 @@ export default function SignInScreen() {
   }
 
   async function handleSubmit() {
-    const nextEmailError = email.trim() ? undefined : '이메일을 입력해 주세요.';
+    const nextEmailError = validateEmail(email);
     const nextPasswordError = password ? undefined : '비밀번호를 입력해 주세요.';
     setEmailError(nextEmailError);
     setPasswordError(nextPasswordError);
