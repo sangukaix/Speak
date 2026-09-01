@@ -42,12 +42,14 @@
 - [ ] Implement reauthentication and account deletion after the protected backend boundary is ready
 - [x] Pause at the complete navigable auth UI/UX checkpoint and present its screen/transition map and working preview to the owner before final polish
 - [x] Protect the owner-selected account route tree at the root; block direct production developer-health navigation; export fixed lesson params for static-web deep links
-- [ ] Add FastAPI learner JWT/session verification, `DELETE /account`, CORS preflight, deletion reauthentication, and pre-delete-token rejection tests
+- [x] Add locally tested FastAPI asymmetric JWT signature/issuer/audience/expiry/learner-claim verification, protected `GET /auth/me`, and configured-origin GET preflight handling without using provider secrets
+- [ ] Connect JWT verification to the real project, add authoritative active-session validation, `DELETE /account`, DELETE CORS preflight, deletion reauthentication, and pre-delete-token rejection tests
 - [ ] Pass the Phase 3 acceptance matrix on web and Android, then verify iOS before claiming cross-platform completion
 - [ ] Complete production privacy, processor/region/retention, SMTP, age-policy, deep-link, deletion, and abuse-control gates before public registration
 
 ## Parallel product and maintenance decisions
 
+- [x] Inventory and smoke-test the optional local Ollama `gemma4:26b` model; keep application integration deferred to the Phase 5 FastAPI provider boundary
 - [ ] Review the working name, Korean copy, visual direction, and workplace-English launch wedge with target learners
 - [ ] Decide which complete free learning loop appears before any future paywall
 - [ ] Keep dark mode planned until a full second palette and platform visual QA are in scope

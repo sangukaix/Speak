@@ -16,6 +16,37 @@ Response `200 OK`:
 
 This endpoint currently checks application availability only. It does not claim that planned database or AI services are connected.
 
+## GET /auth/me
+
+Status: **Implemented cryptographic checkpoint. Live Supabase JWKS and active-session behavior are not verified yet.**
+
+Returns the authenticated learner ID after FastAPI verifies the bearer token against the configured Supabase project's public asymmetric signing keys.
+
+Request:
+
+```http
+GET /auth/me HTTP/1.1
+Authorization: Bearer <learner-access-token>
+```
+
+Response `200 OK`:
+
+```json
+{
+  "user_id": "123e4567-e89b-12d3-a456-426614174000"
+}
+```
+
+The verifier requires an algorithm in the backend allowlist (`ES256` by default; `ES256,RS256` only during a planned cross-algorithm rotation), trusted issuer, `authenticated` audience and role, expiry, issued-at time, learner UUID, session UUID, assurance level, and non-anonymous status. It derives the JWKS URL only from backend `SUPABASE_URL`; it never accepts a token-provided key URL and never needs the Supabase secret key.
+
+| Status | Stable meaning |
+|---|---|
+| `401` | Bearer token is missing, malformed, expired, signed incorrectly, or belongs to another issuer/audience |
+| `403` | A valid token does not represent an ordinary non-anonymous learner |
+| `503` | Supabase configuration or trusted public signing keys are unavailable |
+
+This route is a side-effect-free integration smoke check. It does not yet query authoritative active-session state, so it is not sufficient for account deletion or another security-sensitive operation. Those checks remain part of the planned `DELETE /account` boundary below.
+
 ## Planned Phase 3: DELETE /account
 
 Status: **Contract only. This route and its CORS method are not implemented.**

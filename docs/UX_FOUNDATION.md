@@ -181,7 +181,7 @@ Use these labels consistently:
 - `선택형 데모`: scripted turn-taking interaction
 - `예시 리포트`: fixed report information architecture
 - `기능 미연결`: visible future control or promise without implementation
-- `실제 GET /health`: the one current real client-server integration
+- `실제 GET /health`: the one current real frontend-to-server interaction; the protected JWT smoke API is not wired into the demo UI
 
 Do not use `완료`, `저장됨`, `AI 분석 중`, `마이크 사용 중`, or a streak claim unless the corresponding behavior is real.
 

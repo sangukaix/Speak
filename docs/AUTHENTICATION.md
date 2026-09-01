@@ -2,9 +2,9 @@
 
 Updated: 2026-09-01
 
-Status: **UI/UX implementation checkpoint with social entry. The dependency/client boundary, secure native session adapter, typed state, email flow, Google OAuth code path, native iOS Apple flow, web Apple OAuth path, PKCE callbacks, and root guards are implemented. No Supabase/Google/Apple project, real account, protected API, or account deletion is connected yet.**
+Status: **UI/UX implementation checkpoint with social entry plus a locally tested backend JWT checkpoint. The dependency/client boundary, secure native session adapter, typed state, email flow, Google OAuth code path, native iOS Apple flow, web Apple OAuth path, PKCE callbacks, root guards, asymmetric JWKS verifier, and protected `/auth/me` smoke route are implemented. No Supabase/Google/Apple project, real account, live JWKS/session verification, or account deletion is connected yet.**
 
-The development-only `/developer/auth-preview` route makes every account state navigable without sending an authentication request. With blank `EXPO_PUBLIC_SUPABASE_URL` and `EXPO_PUBLIC_SUPABASE_PUBLISHABLE_KEY`, action buttons stay disabled and the UI says that it is in review mode. The email plus social UI checkpoint passes TypeScript, Expo Doctor 21/21, Android/iOS/web export, dependency-tree inspection, desktop/390 px browser review, and an `access_denied` callback return-to-sign-in check. These are source/bundle/UI checks, not real-provider or installed-device validation. Real email delivery/deep links, Google/Apple consent and callback behavior, FastAPI JWT/session enforcement, deletion, and the production privacy gates remain unverified.
+The development-only `/developer/auth-preview` route makes every account state navigable without sending an authentication request. With blank `EXPO_PUBLIC_SUPABASE_URL` and `EXPO_PUBLIC_SUPABASE_PUBLISHABLE_KEY`, action buttons stay disabled and the UI says that it is in review mode. The email plus social UI checkpoint passes TypeScript, Expo Doctor 21/21, Android/iOS/web export, dependency-tree inspection, desktop/390 px browser review, and an `access_denied` callback return-to-sign-in check. The backend verifier passes local ephemeral-key tests for valid, expired, wrong-signature, wrong-issuer, wrong-audience, malformed-claim, API-key, symmetric-algorithm, anonymous/role, JWKS-outage, and CORS cases. These are source/bundle/UI and isolated cryptographic checks, not live-provider or installed-device validation. Real email delivery/deep links, Google/Apple consent and callback behavior, live JWKS and authoritative session enforcement, deletion, and the production privacy gates remain unverified.
 
 This document establishes the engineering and security behavior before a provider project is connected and now tracks the implementation against that baseline. It covers identity states, user-facing privacy language, route protection, failure recovery, and acceptance tests. It is not a production privacy policy or legal approval. On 2026-09-01, the project owner approved making the current app account-required; a future free demo will use a separate `/demo` flow and is not part of Phase 3.
 
@@ -89,6 +89,7 @@ The current files did not need a broad `(app)` move. The implementation puts one
 | `/lesson/report` | Signed in | Existing example report |
 | `/developer/health` | Development diagnostic | No learner session required in development; hide its link and route a direct production request to the neutral not-found/root surface |
 | `GET /health` | Public API | Remains an availability check only |
+| `GET /auth/me` | Learner bearer JWT | Verify the configured asymmetric signature and learner claims, then return only the signed `sub`; live JWKS/session behavior remains pending |
 
 Root guard truth table:
 
@@ -334,7 +335,7 @@ The implementation is incomplete until these behaviors are automated where pract
 4. Configure email confirmation, password controls, rate limits, exact development redirect allowlist, and test email delivery.
 5. Put only the Supabase URL and publishable key in ignored `frontend/.env`; test email, Google, and web Apple on web and Google on an installed Android development build.
 6. Test native Apple and Google on an installed iOS build, including cancellation, private relay, callback cold start, and same-email linking; do not claim iOS completion from Windows export.
-7. Add FastAPI JWT/session verification and `DELETE /account` with tests, including CORS preflight and provider-appropriate fresh reauthentication; do not add application tables yet.
+7. Connect the implemented FastAPI asymmetric JWT verifier and `/auth/me` smoke route to the real project, then add authoritative active-session verification and `DELETE /account` with tests, including DELETE CORS preflight and provider-appropriate fresh reauthentication; do not add application tables yet.
 8. Complete the production privacy, domain/universal-link, SMTP, retention, age-policy, abuse-control, and provider-review gates before public registration.
 
 ## Completion definition

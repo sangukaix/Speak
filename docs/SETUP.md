@@ -112,6 +112,8 @@ SUPABASE_SECRET_KEY
 
 They are not required to review the current UI. `SUPABASE_SECRET_KEY` is backend-only and must never be copied into `frontend/.env` or an `EXPO_PUBLIC_*` variable.
 
+Keep `SUPABASE_JWT_ALGORITHMS=ES256` for the recommended project signing key. Use `RS256` instead if that is the project's single active algorithm; list `ES256,RS256` only during a planned cross-algorithm rotation while both trusted keys can issue unexpired tokens. This setting is not a secret. `HS256` is intentionally unsupported.
+
 The frontend selects a platform-specific local API URL when `EXPO_PUBLIC_API_BASE_URL` is unset:
 
 | Platform | Source default |
@@ -204,7 +206,7 @@ npx expo export --platform all
 Set-Location ..
 ```
 
-`npm run typecheck` first regenerates Expo Router's typed-route declaration and then runs TypeScript, so route validation is independent of the ignored `.expo` cache left by an earlier branch. The current automated baseline is two backend tests plus TypeScript validation. Expo exports verify bundle generation but do not replace manual device interaction or a future end-to-end test suite. Do not claim Android or iOS visual behavior was verified on the new PC until it was actually opened there.
+`npm run typecheck` first regenerates Expo Router's typed-route declaration and then runs TypeScript, so route validation is independent of the ignored `.expo` cache left by an earlier branch. The current automated baseline is 25 backend tests plus TypeScript validation. Expo exports verify bundle generation but do not replace manual device interaction or a future end-to-end test suite. Do not claim Android or iOS visual behavior was verified on the new PC until it was actually opened there.
 
 ## 8. Run the project
 

@@ -135,3 +135,19 @@
 **Reason:** Provider, entitlement, signing, and store records need one stable reverse-DNS identifier before owner-controlled Google and Apple setup begins. The identifier is independent of the user-facing working name, which may still change after naming and trademark review.
 
 **Result:** `frontend/app.json` contains the identifier on both platforms. Provider and installed-build configuration must reuse it; changing it later is a deliberate migration decision rather than an incidental rename.
+
+## 2026-09-01 — Exact asymmetric JWT verification on FastAPI
+
+**Decision:** Verify Supabase learner access tokens in FastAPI with the project's public JWKS and a backend-controlled asymmetric algorithm allowlist. Default new development configuration to `ES256`, permit `RS256`, allow both only during a planned cross-algorithm key rotation, and never fall back to `HS256` or use the Supabase secret key for ordinary JWT verification.
+
+**Reason:** Public-key verification keeps signing material out of the application server, supports provider key rotation, and prevents an untrusted token header from selecting an arbitrary algorithm, issuer, or key endpoint. A short bounded JWKS cache and unknown-key refresh cooldown keep the Auth server out of the normal request hot path without trusting keys indefinitely or allowing arbitrary key IDs to trigger unbounded refetches.
+
+**Result:** `GET /auth/me` verifies signature, issuer, audience, time claims, learner/session UUIDs, role, assurance level, and non-anonymous status, then returns only the verified learner ID. Local tests use an ephemeral key and no provider credential. Live JWKS behavior, authoritative session existence, fresh reauthentication, and `DELETE /account` remain Phase 3 release gates.
+
+## 2026-09-01 — Ollama as an optional backend-only development provider
+
+**Decision:** Use the laptop's Ollama models for Phase 5 text-tutor and later structured-report development only through a FastAPI provider boundary. Do not let Expo call Ollama directly, do not treat a downloaded model as a repository dependency, and do not commit to the same model for production before evaluation.
+
+**Reason:** Local inference enables low-cost iteration and keeps prototype prompts on the development machine. Keeping it behind FastAPI preserves learner authentication, rate limits, input/output policy, consistent schemas, and a clean switch to a hosted provider. Ollama's loopback API has no built-in authentication, so exposing it directly to physical phones or a public network would create an unnecessary unsafe surface.
+
+**Result:** Ollama 0.33.2 with `gemma4:26b` was discovered and smoke-tested on this Windows laptop. A Korean correction request and structured JSON response both succeeded; the warm structured request completed in about 2.15 seconds. No application AI code was added because authentication and profile dependencies still precede Phase 5. Gemma does not replace future speech recognition or speech synthesis.

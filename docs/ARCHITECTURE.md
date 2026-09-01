@@ -7,14 +7,15 @@ Web / Android / iOS
         |
 Expo + React Native + Expo Router
         |-- Supabase Auth client (email + Google/Apple code paths; inactive until project/provider config exists)
-        `-- REST: GET /health (developer screen only) --> FastAPI
+        |-- REST: GET /health (developer screen only) --> FastAPI
+        `-- REST: GET /auth/me (bearer smoke check) ---> FastAPI --> Supabase public JWKS
 ```
 
 The frontend contains no secrets. It accepts a public API base URL plus the Supabase project URL and publishable key; the latter two remain blank locally, so no real account traffic occurs. FastAPI loads private configuration from environment variables, owns CORS policy, validates responses with Pydantic, and exposes routes through a central router.
 
 Phase 2 product screens do not call the API. They use fixed local data under `frontend/src/mocks`, and the interface labels that data as demo or example content. The original health check remains functional under `src/app/developer/health.tsx`.
 
-The Supabase Auth client boundary and platform-specific social entry code are implemented but unconfigured. No Supabase project, Google/Apple provider credentials, protected FastAPI auth, application database, OpenAI, or external speech service is connected.
+The Supabase Auth client boundary and platform-specific social entry code are implemented but unconfigured. FastAPI now has an asymmetric JWKS verifier and protected `/auth/me` smoke route tested with ephemeral local keys. No Supabase project, Google/Apple provider credentials, live JWKS/session verification, account deletion, application database, OpenAI, or external speech service is connected.
 
 ## Frontend structure
 
@@ -89,6 +90,8 @@ Future user-owned tables
 The client calls Auth directly so FastAPI never receives a password or third-party ID token. Google uses a Supabase PKCE OAuth browser session on native and web. iOS Apple login uses Apple's native sheet with a random SHA-256 nonce and exchanges the returned identity token directly with Supabase; web Apple uses PKCE OAuth. The publishable key is intentionally exposable, but requests made with it retain the permissions granted to the relevant database role; every exposed table still needs least-privilege grants and RLS. Expo Router guards prevent accidental navigation and protected-screen disclosure; they are not a security boundary. FastAPI JWT/session checks and future database grants/RLS enforce authorization. All existing tabs and lesson routes are account-required in Phase 3. A future free experience uses a separate `/demo` tree. The development health diagnostic remains independent of learner authentication in development and is blocked from direct production navigation.
 
 Phase 3 does not create profile or learning tables. Native long-lived session credentials require provider-compatible platform-protected storage; ordinary plaintext AsyncStorage is not an accepted fallback. Web storage receives a separate XSS/CSP review before public deployment.
+
+The first backend checkpoint uses `PyJWT` with a backend-configured asymmetric algorithm allowlist, a fixed issuer derived from backend `SUPABASE_URL`, and a five-minute in-process public JWKS cache. The default allowlist contains only `ES256`; `RS256` can be added temporarily for a planned cross-algorithm rotation. Unknown key IDs can force at most one refresh per cooldown window. The verifier rejects symmetric algorithms and token-provided key URLs. `/auth/me` proves signature and learner-claim enforcement without exposing email or session ID. Authoritative `auth.sessions` validation and privileged deletion remain separate work because a cryptographically valid token can outlive sign-out until its expiry.
 
 ## Portability
 

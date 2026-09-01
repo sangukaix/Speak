@@ -9,11 +9,11 @@ Updated: 2026-09-01
 - 저장소: `https://github.com/sangukaix/Speak.git`
 - 현재 이어서 작업할 로컬 브랜치: `codex/phase-3-authentication`
 - `main`은 현재 prototype/auth checkpoint보다 오래되었으므로 작업 기준이 아니다. 다른 PC로 옮기기 전 이 브랜치를 commit·push해야 한다.
-- 현재 구현 완료 범위: Phase 0, Phase 1, Phase 2와 Phase 3의 navigable email/Google/Apple auth UI/UX checkpoint
+- 현재 구현 완료 범위: Phase 0, Phase 1, Phase 2와 Phase 3의 navigable email/Google/Apple auth UI/UX 및 locally tested FastAPI JWT checkpoint
 - Phase 3 기술 명세와 account-required 정책이 승인되었고, Supabase dependency/client boundary, secure native session storage, typed auth state, email PKCE 화면, Google OAuth(Android/iOS/web), native Apple(iOS), Apple OAuth(web), root guard, privacy draft, static lesson params가 구현되었다. 실제 Supabase/Google/Apple provider project와 계정 연결은 아직 없다.
-- 현재 구현된 실제 서버 연동: FastAPI `GET /health` 하나
+- 현재 구현된 서버 API: public `GET /health`와 asymmetric JWT/JWKS 검증을 거치는 `GET /auth/me`; 후자는 ephemeral local key로 검증했으며 실제 Supabase JWKS에는 아직 연결하지 않았다.
 - 현재 화면의 lesson, progress, profile, session, review, report 데이터는 모두 명시적으로 표시된 고정 Demo/Mock이다.
-- 실제 Supabase project/email delivery, Google/Apple provider credentials·consent·redirects, installed-device social login, FastAPI protected auth/deletion, OpenAI, 음성, 학습 저장, 결제, Agent, Avatar는 아직 연결하지 않았다.
+- 실제 Supabase project/email delivery/JWKS/active-session 확인, Google/Apple provider credentials·consent·redirects, installed-device social login, account deletion, OpenAI, 음성, 학습 저장, 결제, Agent, Avatar는 아직 연결하지 않았다.
 - 이전 Codex 대화 기록, 로그인 세션, 로컬 설정은 Git에 포함되지 않는다. 이 문서와 `AGENTS.md`가 새 세션의 지속 가능한 기억이다.
 
 새 PC에서는 다음처럼 브랜치를 지정해 복제한다.
@@ -99,7 +99,8 @@ Frontend design은 사용자가 완성된 시안을 먼저 전달해야만 진�
 
 - FastAPI 애플리케이션 구조
 - 환경변수 기반 explicit CORS allowlist
-- `GET /health`와 자동화된 backend test 두 개
+- public `GET /health`, protected `GET /auth/me`, exact asymmetric algorithm/issuer/audience/time/learner-claim 검증, bounded public JWKS cache
+- ephemeral local ES256/RS256 key와 실제 PyJWT 검증 경로를 사용하는 자동화된 backend test 25개
 - 향후 server-owned OpenAI/Supabase 통합을 위한 경계 문서
 
 ### 조사와 기획
@@ -128,7 +129,7 @@ Frontend design은 사용자가 완성된 시안을 먼저 전달해야만 진�
 ## 아직 구현하지 않은 것
 
 - 실제 Supabase/Google/Apple project, 실제 회원가입·로그인·email delivery·OAuth consent·deep-link device 검증
-- account deletion reauthentication, FastAPI JWT/session validation, protected API
+- live Supabase JWKS 및 authoritative active-session validation, account deletion reauthentication와 privileged deletion
 - Supabase schema, migration, application database persistence
 - OpenAI text 또는 Realtime 호출
 - microphone, recording, ASR, WebRTC, live transcript, pronunciation scoring
@@ -143,7 +144,7 @@ Frontend design은 사용자가 완성된 시안을 먼저 전달해야만 진�
 
 2026-09-01 집 Windows PC의 `D:\pp2026\Speak`에서 dependencies를 lock file 기준으로 다시 설치한 뒤 다음을 실행했다.
 
-- Backend: Python 3.13.15에서 `2 passed`, `pip check` 통과
+- Backend: Python 3.13.15에서 JWT checkpoint 보강 후 `25 passed`, `pip check` 통과
 - Frontend: `npm ci`, social auth 추가 후 `npm run typecheck`, `npm ls --all` 통과
 - Expo: `expo-doctor` 21/21 통과
 - Expo: social auth 추가 후 Expo Doctor 21/21, `npx expo export --platform all`로 iOS, Android, Web bundle과 26개 static route 생성 통과
@@ -191,11 +192,11 @@ Phase 2 기준선과 현재 email/social auth UI checkpoint를 유지하면서 �
 3. Owner-controlled Google Auth Platform과 Apple Developer 등록을 만들고 Google OAuth와 Apple native/web 설정을 Supabase에 연결한다. Client secret, Apple private key, generated secret은 console에만 두고 prompt·logs·Git에 남기지 않는다.
 4. 실제 `EXPO_PUBLIC_SUPABASE_URL`과 publishable key는 로컬 `frontend/.env`에만 넣고 email + Google + Apple flow를 지원 플랫폼에서 검증한다. 먼저 web/Android, 이후 macOS와 실제 iPhone에서 Apple native를 검증한다.
 5. 동일 verified email automatic linking, Apple private relay 분리, 취소, provider-disabled, cold callback, token 미노출을 acceptance matrix로 확인한다.
-6. FastAPI JWT/signature/issuer/audience/session validation과 CORS preflight tests를 구현한 뒤 password 또는 같은 social provider의 fresh signed `amr` proof를 사용하는 `DELETE /account`를 추가한다.
+6. 구현된 FastAPI JWT signature/issuer/audience/expiry/learner-claim verifier와 `/auth/me`를 실제 Supabase JWKS에 연결해 검증한다. 그다음 authoritative active-session validation을 붙이고 password 또는 같은 social provider의 fresh signed `amr` proof를 사용하는 `DELETE /account`와 DELETE CORS preflight를 추가한다.
 7. Deletion revocation, privacy processor/region/retention, SMTP/abuse/age gates를 검증한다. Profile onboarding과 저장은 Phase 4 전까지 만들지 않는다.
 8. 사용자가 참여할 수 있을 때 전체 auth/learning 흐름, 작업명, 한국어 카피, `calm momentum` 시각 방향, workplace-English launch wedge를 검토한다.
 
-새 Codex가 즉시 다시 작성할 것은 인증 화면이나 social auth client가 아니다. `com.sangukaix.speakai`를 유지하면서 **owner-controlled Supabase/Google/Apple provider connection과 실제 platform acceptance test**를 이어간다. 그다음 가장 작은 protected backend boundary로 간다. OpenAI, 음성, profile persistence, 결제는 여전히 범위 밖이다.
+새 Codex가 즉시 다시 작성할 것은 인증 화면, social auth client, 또는 이미 구현된 local JWT verifier가 아니다. `com.sangukaix.speakai`를 유지하면서 **owner-controlled Supabase/Google/Apple provider connection, live JWKS 연결, 실제 platform acceptance test**를 이어간다. 그다음 active-session/deletion backend boundary로 간다. OpenAI, 음성, profile persistence, 결제는 여전히 현재 Phase 3 범위 밖이다.
 
 열린 제품 결정:
 
@@ -221,6 +222,7 @@ Phase 2 기준선과 현재 email/social auth UI checkpoint를 유지하면서 �
 | Python requirements files | Codex 대화 기록과 local auth/session |
 | PowerShell setup/run scripts | Android Studio, SDK, AVD, Google Play app/session |
 | Expo/FastAPI source configuration | Fluently app와 로그인/MFA 상태 |
+| AI provider architecture and safe templates | Ollama application and `.ollama/models` blobs |
 | Repository `AGENTS.md` instructions | Codex plugins, skills, MCP/app connections and their authorization state |
 
 `node_modules`, `.venv`, caches, build output은 복사하지 않는다. 새 PC에서 lock/requirements로 재생성한다. Android keystore나 인증서가 미래에 생기면 Git이 아니라 별도 encrypted secret storage로 이동한다.
@@ -235,7 +237,7 @@ Handoff와 source 문서에는 로그인용 개인 이메일, 비밀번호, OTP,
 | ChatGPT/Codex | 개발을 Codex로 이어갈 때 필요 | ChatGPT desktop app 또는 Codex IDE extension에서 본인이 browser login 완료 |
 | Fluently | 제품 기능 구현에는 불필요, 추가 경쟁 조사를 할 때만 필요 | 기존 owner-controlled 계정으로 본인이 로그인하고 이메일 MFA가 나오면 직접 완료 |
 | Google Play | Android emulator에서 Fluently를 다시 설치할 때만 필요 | 본인이 emulator Play Store에 로그인; session은 이전되지 않음 |
-| OpenAI API | Phase 3 인증 구현에는 불필요 | key를 만들거나 입력하지 않음 |
+| OpenAI API | Phase 3 인증 구현에는 불필요; Phase 5 local text experiments can use Ollama first | key를 만들거나 입력하지 않음 |
 | Supabase | UI review 승인 뒤 owner-controlled development project 필요 | owner가 로그인·MFA·region 선택을 완료하고 실제 key 값은 prompt나 문서에 넣지 않음 |
 | Google Auth Platform | 실제 Google 로그인 검증부터 필요, 아직 구성되지 않음 | owner가 로그인/MFA·consent screen·OAuth client 설정을 직접 완료하고 secret은 Supabase console에만 입력 |
 | Apple Developer | 실제 iOS Apple/web Apple 검증부터 필요, 아직 구성되지 않음 | `com.sangukaix.speakai` App ID와 Services ID 기준으로 owner가 capability·key를 생성; private key와 generated secret은 prompt/Git 금지 |
@@ -246,7 +248,7 @@ Handoff와 source 문서에는 로그인용 개인 이메일, 비밀번호, OTP,
 
 ## 현재 PC의 관련 도구 스냅샷
 
-이 표는 2026-08-29 현재 기존 Windows PC에서 확인한 상태다. 새 PC가 똑같은 절대경로나 도구 버전을 가져야 한다는 뜻이 아니라, 무엇을 재설치해야 하는지 판단하기 위한 기록이다.
+이 표는 2026-09-01 현재 관련 Windows 도구에서 확인한 상태다. 새 PC가 똑같은 절대경로나 도구 버전을 가져야 한다는 뜻이 아니라, 무엇을 재설치해야 하는지 판단하기 위한 기록이다.
 
 | 항목 | 기존 PC 상태 | 새 PC 기준 |
 |---|---|---|
@@ -261,10 +263,13 @@ Handoff와 source 문서에는 로그인용 개인 이메일, 비밀번호, OTP,
 | Android Studio | 설치됨, bundled Java 25 | Android 검증을 할 때만 새 PC에 설치 |
 | Android SDK tools | ADB 37.0.1, Emulator 37.1.11 | Android Studio SDK Manager에서 재설치 |
 | Android AVD | `Fluently_Pixel_8_API_36`, Pixel 8/API 36 Google Play system image | 선택 사항; Play Store enablement를 가정하지 말고 AVD와 로그인 상태를 새로 생성 |
+| Ollama | 0.33.2 background API at `127.0.0.1:11434`; `gemma4:26b`와 `qwen3:14b` local models | Phase 5 local AI 개발 때만 선택적으로 설치하고 모델을 다시 pull; Git/USB dependency 폴더로 복사하지 않음 |
 | Codex/ChatGPT | desktop 작업과 로컬 대화 사용 | 앱 또는 VS Code extension 설치 후 새 로그인 |
 | Codex extensions | Browser, Computer Use, GitHub/OpenAI documentation capabilities were used when available | Core project dependency가 아니며 필요할 때만 새 PC에서 다시 설치·연결 |
 
 기존 Android SDK는 기본 사용자별 SDK 경로에 있고 PATH, `ANDROID_HOME`, `ANDROID_SDK_ROOT`, `JAVA_HOME`에 의존하지 않은 상태였다. 새 PC는 Android Studio가 관리하는 SDK 경로를 사용하고 필요한 경우에만 환경변수를 설정한다.
+
+이 PC의 Ollama REST API에서 `gemma4:26b`가 실제 한국어 영어교정 답변과 schema-constrained JSON을 반환했다. 첫 요청 29.37초 중 model load가 27.85초였고, warm structured request는 2.15초였다. 이는 machine-local smoke result일 뿐 앱 AI 기능 구현이나 production model 검증이 아니다. Phase 5에서는 `Expo → authenticated FastAPI → Ollama`로 연결하며 mobile app이 무인증 Ollama 포트를 직접 호출하지 않는다. Gemma는 text/report 개발에는 사용할 수 있지만 STT/TTS 기능을 대신하지 않는다.
 
 기존 emulator에서는 처음에 host-audio gate와 Windows microphone input 문제로 녹음이 되지 않았지만 설정 후 입력 막대가 움직였고 assessment를 완료했다. 그 뒤 별개의 emulator DNS outage가 발생했다. Fluently 같은 실제 음성 제품을 추가 조사할 때는 실제 Android phone이 더 신뢰할 수 있다. Emulator를 사용한다면 Extended Controls의 Microphone에서 host audio input을 켜고 Windows microphone permission과 입력 막대를 먼저 확인한다. 이 문제는 Speak AI 코드 문제로 취급하지 않는다.
 
@@ -300,13 +305,13 @@ Handoff와 source 문서에는 로그인용 개인 이메일, 비밀번호, OTP,
 
 먼저 어떤 파일도 수정하지 말고 현재 브랜치가 codex/phase-3-authentication인지 확인한 뒤 git status, 최근 log, remote 동기화 상태를 읽기 전용으로 점검해줘. 그다음 AGENTS.md에 적힌 순서대로 필수 문서를 전부 읽고, 특히 docs/HANDOFF.md의 현재 상태와 재개 지점을 기준으로 삼아줘.
 
-현재 Phase 2와 Phase 3 email/social auth UI/UX checkpoint까지 구현되었다. Supabase boundary, secure native session adapter, typed state, email screens, Google OAuth(Android/iOS/web), native Apple(iOS), Apple OAuth(web), PKCE callback, root guards, privacy draft는 있지만 실제 Supabase/Google/Apple project/config가 비어 있어 계정 요청은 보내지 않는다. FastAPI의 실제 연동은 GET /health뿐이며 데이터베이스, protected API/deletion, AI, 음성, 결제, 학습 저장, Agent, Avatar는 연결되지 않았다. UI와 Mock을 실제 provider 검증 완료처럼 설명하지 말고 이 범위를 보존해줘.
+현재 Phase 2와 Phase 3 email/social auth UI/UX 및 FastAPI JWT checkpoint까지 구현되었다. Supabase boundary, secure native session adapter, typed state, email screens, Google OAuth(Android/iOS/web), native Apple(iOS), Apple OAuth(web), PKCE callback, root guards, privacy draft, asymmetric JWKS verifier, protected GET /auth/me는 있지만 실제 Supabase/Google/Apple project/config가 비어 있어 계정 요청과 live JWKS 요청은 보내지 않는다. FastAPI JWT 경계는 ephemeral local key로 테스트했지만 active-session validation/deletion, 데이터베이스, AI, 음성, 결제, 학습 저장, Agent, Avatar는 연결되지 않았다. UI와 Mock 또는 local cryptographic test를 실제 provider 검증 완료처럼 설명하지 말고 이 범위를 보존해줘.
 
 새 PC에서 Git, Node 24.18.0, npm 11+, Python 3.13 설치 상태를 확인하고 docs/SETUP.md대로 local .env와 dependency를 재생성해줘. 기존 PC의 .venv, node_modules, Codex auth/session은 복사하지 않는다. 비밀번호, OTP, 개인 이메일, Google/Fluently 로그인 정보, API key는 요청하거나 Git에 저장하지 말고, 로그인이 필요하면 내가 직접 입력하도록 안내해줘.
 
 Bootstrap 후 backend pytest, frontend typecheck, Expo web/all export를 실행해 현재 기준선을 검증해줘. 문제가 있으면 원인을 먼저 설명하고 가장 작은 안전한 수정만 해줘.
 
-검증이 끝나면 `com.sangukaix.speakai`를 유지해 owner-controlled Supabase/Google/Apple project를 준비하고 실제 email·Google·Apple flow를 지원 플랫폼의 installed build에서 검증한 다음 FastAPI JWT/session/deletion 경계를 acceptance-test 순서로 구현해. Secret이나 Apple private key를 prompt·Git·log에 넣지 말고, OpenAI, profile persistence, 음성, 결제는 추가하지 마.
+검증이 끝나면 `com.sangukaix.speakai`를 유지해 owner-controlled Supabase/Google/Apple project를 준비하고 실제 email·Google·Apple flow와 기존 FastAPI JWT verifier의 live JWKS 연결을 검증한 다음 authoritative session/deletion 경계를 acceptance-test 순서로 구현해. Secret이나 Apple private key를 prompt·Git·log에 넣지 말고, OpenAI, profile persistence, 음성, 결제는 현재 Phase 3에 추가하지 마.
 
 작업 전에는 간단한 계획과 가정을 알려주고, 완료 후에는 변경 파일, 실행한 검증, 남은 미검증 사항, 다음 권장 작업을 보고해줘.
 ```

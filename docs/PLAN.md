@@ -9,7 +9,7 @@ Each phase begins after its dependencies are verified. Completion requires imple
 | 2 | UI foundation | Research, theme, navigation, reusable primitives, clickable demo loop | Product skeleton, documentation, type check, and cross-platform bundles pass | 1 |
 | 3 | Authentication | Verified email/password plus Google/Apple Auth, session restore/recovery/deletion, guarded routes, JWT boundary, privacy notice | Auth acceptance matrix passes on supported platforms; invalid API credentials are rejected; no privileged value reaches the client | 2 |
 | 4 | User profile | Level, goals, interests | Profile persists and reloads | 3 |
-| 5 | AI text tutor | Secure backend OpenAI text flow | Conversation and error paths pass | 4 |
+| 5 | AI text tutor | Secure backend provider boundary; Ollama may serve local development while production provider is evaluated | Conversation and error paths pass | 4 |
 | 6 | OpenAI Realtime | Ephemeral session API | Client obtains scoped credential | 5 |
 | 7 | Voice conversation | WebRTC speech-to-speech | Stable two-way audio session | 6 |
 | 8 | Realtime transcript | Transcript events and UI | Transcript matches session events | 7 |
